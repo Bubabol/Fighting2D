@@ -3,47 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement2 : MonoBehaviour
 {
     public CharacterController2D controller;
     public Animator animator;
     public float runSpeed = 40f;
-    public int playerIndex;
+
     private float horizontalMove = 0f;
     private bool crouch = false;
     private bool jump = false;
     private bool punch = false;
 
     public PlayerControls controls;
-    
+
     private void Awake()
     {
         controls = new PlayerControls();
 
-        controls.Movement.Move.performed += ctx => horizontalMove = ctx.ReadValue<Vector2>().x;
+        controls.Movement2.Move2.performed += ctx => horizontalMove = ctx.ReadValue<Vector2>().x;
+        controls.Movement2.Move2.canceled += ctx => horizontalMove = 0f;
 
-        controls.Movement.Move.canceled += ctx => horizontalMove = 0f;
+        controls.Movement2.Jump2.started += _ => jump = true;
+        controls.Movement2.Jump2.canceled += _ => jump = false;
 
-        controls.Movement.Jump.started += _ => jump = true;
-        controls.Movement.Jump.canceled += _ => jump = false;
+        controls.Movement2.Crouch2.started += _ => crouch = true;
+        controls.Movement2.Crouch2.canceled += _ => crouch = false;
 
-        controls.Movement.Crouch.started += _ => crouch = true;
-        controls.Movement.Crouch.canceled += _ => crouch = false;
-
-        controls.Movement.Punch.started += _ => punch = true;
-        
-            
-        
+        controls.Movement2.Punch2.started += _ => punch = true;
     }
 
     private void OnEnable()
     {
-        controls.Movement.Enable();
+        controls.Movement2.Enable();
     }
 
     private void OnDisable()
     {
-        controls.Movement.Disable();
+        controls.Movement2.Disable();
     }
 
     private void Update()
@@ -58,10 +54,7 @@ public class PlayerMovement : MonoBehaviour
     {
         animator.SetBool("IsJumping", false);
     }
-    public void OnCrouching()
-    {
-        animator.SetBool("IsCrouching", true);
-    }
+
     private void FixedUpdate()
     {
         controller.Move(horizontalMove * runSpeed * Time.fixedDeltaTime, crouch, jump);
@@ -70,8 +63,4 @@ public class PlayerMovement : MonoBehaviour
         controller.Punch(punch);
         punch = false;
     }
-    
-
-    
-    
 }
